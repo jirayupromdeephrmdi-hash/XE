@@ -1,0 +1,520 @@
+-- ==========================================
+-- MultiGame Hub v6.0 | FINAL EDITION
+-- Dark Ninja Theme | All-in-One Stable
+-- ==========================================
+
+if _G.MultiGameHubLoaded then warn("MultiGame Hub ทำงานอยู่แล้ว!"); return end
+_G.MultiGameHubLoaded = true
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+-- ⭐ ธีมสี Dark Ninja
+local THEME = {
+    Primary = Color3.fromRGB(0, 150, 255),   -- น้ำเงิน
+    Accent = Color3.fromRGB(255, 30, 50),    -- แดง
+    Dark = Color3.fromRGB(20, 20, 30),       -- ดำ
+    Darker = Color3.fromRGB(10, 10, 15),     -- ดำเข้ม
+    Text = Color3.fromRGB(220, 220, 230)
+}
+
+-- ==========================================
+-- [1] LOADING SCREEN
+-- ==========================================
+local LoadingGui = Instance.new("ScreenGui")
+LoadingGui.Name = "MGH_Loading"
+LoadingGui.IgnoreGuiInset = true
+LoadingGui.ResetOnSpawn = false
+LoadingGui.DisplayOrder = 9999
+LoadingGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local Backdrop = Instance.new("Frame")
+Backdrop.Size = UDim2.new(1, 0, 1, 0)
+Backdrop.BackgroundColor3 = THEME.Darker
+Backdrop.BorderSizePixel = 0
+Backdrop.Parent = LoadingGui
+
+local TopGlow = Instance.new("Frame")
+TopGlow.Size = UDim2.new(1, 0, 0, 3)
+TopGlow.BackgroundColor3 = THEME.Primary
+TopGlow.BorderSizePixel = 0
+TopGlow.Parent = Backdrop
+
+local BottomGlow = Instance.new("Frame")
+BottomGlow.Size = UDim2.new(1, 0, 0, 3)
+BottomGlow.Position = UDim2.new(0, 0, 1, -3)
+BottomGlow.BackgroundColor3 = THEME.Accent
+BottomGlow.BorderSizePixel = 0
+BottomGlow.Parent = Backdrop
+
+local CenterFrame = Instance.new("Frame")
+CenterFrame.Size = UDim2.new(0, 380, 0, 220)
+CenterFrame.Position = UDim2.new(0.5, -190, 0.5, -110)
+CenterFrame.BackgroundColor3 = THEME.Dark
+CenterFrame.BorderSizePixel = 0
+CenterFrame.Parent = Backdrop
+local CFC = Instance.new("UICorner"); CFC.CornerRadius = UDim.new(0, 14); CFC.Parent = CenterFrame
+local CFS = Instance.new("UIStroke"); CFS.Color = THEME.Primary; CFS.Thickness = 2; CFS.Parent = CenterFrame
+
+-- โลโก้
+local LogoFrame = Instance.new("Frame")
+LogoFrame.Size = UDim2.new(0, 90, 0, 90)
+LogoFrame.Position = UDim2.new(0.5, -45, 0, 15)
+LogoFrame.BackgroundColor3 = THEME.Darker
+LogoFrame.BorderSizePixel = 0
+LogoFrame.Parent = CenterFrame
+local LFC = Instance.new("UICorner"); LFC.CornerRadius = UDim.new(1, 0); LFC.Parent = LogoFrame
+local LFS = Instance.new("UIStroke"); LFS.Color = THEME.Primary; LFS.Thickness = 2.5; LFS.Parent = LogoFrame
+
+local LogoText = Instance.new("TextLabel")
+LogoText.Size = UDim2.new(1, 0, 1, 0)
+LogoText.BackgroundTransparency = 1
+LogoText.Text = "MGH"
+LogoText.TextColor3 = THEME.Primary
+LogoText.Font = Enum.Font.GothamBold
+LogoText.TextSize = 32
+LogoText.Parent = LogoFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 110)
+Title.BackgroundTransparency = 1
+Title.Text = "MULTIGAME HUB"
+Title.TextColor3 = Color3.fromRGB(240, 240, 250)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 22
+Title.Parent = CenterFrame
+
+local Subtitle = Instance.new("TextLabel")
+Subtitle.Size = UDim2.new(1, 0, 0, 18)
+Subtitle.Position = UDim2.new(0, 0, 0, 138)
+Subtitle.BackgroundTransparency = 1
+Subtitle.Text = "v6.0 | FINAL EDITION"
+Subtitle.TextColor3 = THEME.Primary
+Subtitle.Font = Enum.Font.Gotham
+Subtitle.TextSize = 11
+Subtitle.Parent = CenterFrame
+
+local BarBg = Instance.new("Frame")
+BarBg.Size = UDim2.new(1, -60, 0, 6)
+BarBg.Position = UDim2.new(0, 30, 0, 162)
+BarBg.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+BarBg.BorderSizePixel = 0
+BarBg.Parent = CenterFrame
+local BgC = Instance.new("UICorner"); BgC.CornerRadius = UDim.new(1, 0); BgC.Parent = BarBg
+
+local BarFill = Instance.new("Frame")
+BarFill.Size = UDim2.new(0, 0, 1, 0)
+BarFill.BackgroundColor3 = THEME.Primary
+BarFill.BorderSizePixel = 0
+BarFill.Parent = BarBg
+local FillC = Instance.new("UICorner"); FillC.CornerRadius = UDim.new(1, 0); FillC.Parent = BarFill
+
+local StatusText = Instance.new("TextLabel")
+StatusText.Size = UDim2.new(1, -60, 0, 16)
+StatusText.Position = UDim2.new(0, 30, 0, 175)
+StatusText.BackgroundTransparency = 1
+StatusText.Text = "กำลังเริ่มต้น..."
+StatusText.TextColor3 = THEME.Text
+StatusText.Font = Enum.Font.Gotham
+StatusText.TextSize = 11
+StatusText.TextXAlignment = Enum.TextXAlignment.Left
+StatusText.Parent = CenterFrame
+
+local PercentText = Instance.new("TextLabel")
+PercentText.Size = UDim2.new(1, -60, 0, 16)
+PercentText.Position = UDim2.new(0, 30, 0, 175)
+PercentText.BackgroundTransparency = 1
+PercentText.Text = "0%"
+PercentText.TextColor3 = THEME.Primary
+PercentText.Font = Enum.Font.GothamBold
+PercentText.TextSize = 11
+PercentText.TextXAlignment = Enum.TextXAlignment.Right
+PercentText.Parent = CenterFrame
+
+local function SetLoad(p, t)
+    BarFill.Size = UDim2.new(p/100, 0, 1, 0)
+    PercentText.Text = p .. "%"
+    if t then StatusText.Text = t end
+end
+
+task.spawn(function()
+    SetLoad(15, "ตรวจสอบระบบ..."); task.wait(0.4)
+    SetLoad(35, "โหลด ESP..."); task.wait(0.4)
+    SetLoad(55, "สร้าง FOV..."); task.wait(0.4)
+    SetLoad(75, "โหลด UI..."); task.wait(0.4)
+    SetLoad(100, "พร้อมใช้งาน!"); task.wait(0.5)
+    LoadingGui:Destroy()
+end)
+
+-- ==========================================
+-- [2] CONFIG
+-- ==========================================
+local Config = {
+    ESP = {
+        Enabled = true, Box = true, Health = true, Name = true, Distance = true,
+        Rainbow = false, MaxDistance = 1500, TeamCheck = false, WallCheck = false,
+        Color = Color3.fromRGB(0, 255, 0)
+    },
+    Aim = {
+        Enabled = false, FOVRadius = 150, MaxDistance = 500, TeamCheck = true,
+        WallCheck = false, ShowFOV = true, ShowTargetLine = true
+    },
+    Misc = { InfiniteAmmo = false, InfiniteStamina = false }
+}
+
+-- ==========================================
+-- [3] FOV Circle + Target Line
+-- ==========================================
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Thickness = 1.5
+FOVCircle.Color = Color3.fromRGB(255, 255, 255)
+FOVCircle.Filled = false
+FOVCircle.NumSides = 80
+FOVCircle.Transparency = 0.6
+FOVCircle.Visible = false
+
+local TargetLine = Drawing.new("Line")
+TargetLine.Thickness = 1.5
+TargetLine.Color = Color3.fromRGB(255, 0, 0)
+TargetLine.Visible = false
+
+-- ==========================================
+-- [4] ESP
+-- ==========================================
+local ESPObjects = {}
+
+local function IsVisible(char)
+    local origin = Camera.CFrame.Position
+    local targetPos = char.HumanoidRootPart.Position
+    local dir = targetPos - origin
+    local ray = Ray.new(origin, dir.Unit * dir.Magnitude)
+    local hit = workspace:FindPartOnRayWithIgnoreList(ray, {LocalPlayer.Character, char})
+    return hit == nil
+end
+
+local function CreateESP(player)
+    if player == LocalPlayer then return end
+    local box = Drawing.new("Square"); box.Thickness=1.5; box.Filled=false; box.Visible=false
+    local hBar = Drawing.new("Line"); hBar.Thickness=3; hBar.Visible=false
+    local hBg = Drawing.new("Line"); hBg.Thickness=3; hBg.Color=Color3.fromRGB(0,0,0); hBg.Visible=false
+    local nTag = Drawing.new("Text"); nTag.Size=14; nTag.Center=true; nTag.Outline=true; nTag.Color=Color3.fromRGB(255,255,255); nTag.Visible=false
+    local dTag = Drawing.new("Text"); dTag.Size=12; dTag.Center=true; dTag.Outline=true; dTag.Color=Color3.fromRGB(255,255,0); dTag.Visible=false
+    ESPObjects[player] = {Box=box, Health=hBar, HealthBg=hBg, Name=nTag, Distance=dTag}
+end
+
+Players.PlayerRemoving:Connect(function(p)
+    if ESPObjects[p] then
+        for _, o in pairs(ESPObjects[p]) do pcall(function() o:Remove() end) end
+        ESPObjects[p] = nil
+    end
+end)
+
+local function UpdateESP()
+    if not Config.ESP.Enabled then
+        for _, objs in pairs(ESPObjects) do for _, o in pairs(objs) do o.Visible = false end end
+        return
+    end
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") or not player.Character:FindFirstChild("Humanoid") then
+                if ESPObjects[player] then for _, o in pairs(ESPObjects[player]) do o.Visible = false end end
+                continue
+            end
+            if Config.ESP.TeamCheck and player.Team == LocalPlayer.Team then
+                if ESPObjects[player] then for _, o in pairs(ESPObjects[player]) do o.Visible = false end end
+                continue
+            end
+            if not ESPObjects[player] then CreateESP(player) end
+            local objs = ESPObjects[player]
+            local char = player.Character
+            local root = char.HumanoidRootPart
+            local hum = char.Humanoid
+
+            if hum.Health <= 0 then
+                for _, o in pairs(objs) do o.Visible = false end
+                continue
+            end
+
+            local dist = (root.Position - Camera.CFrame.Position).Magnitude
+            if dist > Config.ESP.MaxDistance then
+                for _, o in pairs(objs) do o.Visible = false end
+                continue
+            end
+            if Config.ESP.WallCheck and not IsVisible(char) then
+                for _, o in pairs(objs) do o.Visible = false end
+                continue
+            end
+
+            local sp, onScreen = Camera:WorldToViewportPoint(root.Position)
+            if not onScreen then
+                for _, o in pairs(objs) do o.Visible = false end
+                continue
+            end
+
+            local hp = Camera:WorldToViewportPoint(char.Head.Position)
+            local h = math.abs(hp.Y - sp.Y) * 1.6
+            local w = h * 0.55
+
+            local color = Config.ESP.Color
+            if Config.ESP.Rainbow then color = Color3.fromHSV((tick()*0.5)%1, 1, 1) end
+
+            if Config.ESP.Box then
+                objs.Box.Size = Vector2.new(w, h)
+                objs.Box.Position = Vector2.new(sp.X - w/2, sp.Y - h/2)
+                objs.Box.Color = color
+                objs.Box.Visible = true
+            else objs.Box.Visible = false end
+
+            if Config.ESP.Health then
+                local pct = hum.Health / hum.MaxHealth
+                local bx = sp.X - w/2 - 6
+                objs.HealthBg.From = Vector2.new(bx, sp.Y - h/2)
+                objs.HealthBg.To = Vector2.new(bx, sp.Y + h/2)
+                objs.HealthBg.Visible = true
+                objs.Health.From = Vector2.new(bx, sp.Y + h/2 - (h*pct))
+                objs.Health.To = Vector2.new(bx, sp.Y + h/2)
+                objs.Health.Color = Color3.fromRGB(math.floor(255*(1-pct)), math.floor(255*pct), 0)
+                objs.Health.Visible = true
+            else objs.Health.Visible = false; objs.HealthBg.Visible = false end
+
+            if Config.ESP.Name then
+                objs.Name.Text = player.Name
+                objs.Name.Position = Vector2.new(sp.X, sp.Y - h/2 - 18)
+                objs.Name.Color = color
+                objs.Name.Visible = true
+            else objs.Name.Visible = false end
+
+            if Config.ESP.Distance then
+                objs.Distance.Text = string.format("[%d]", math.floor(dist))
+                objs.Distance.Position = Vector2.new(sp.X, sp.Y + h/2 + 4)
+                objs.Distance.Visible = true
+            else objs.Distance.Visible = false end
+        end
+    end
+end
+
+-- ==========================================
+-- [5] Aim + Target Line (เฉพาะถือปืน)
+-- ==========================================
+local currentTarget = nil
+
+local function IsHoldingWeapon()
+    local char = LocalPlayer.Character
+    if not char then return false end
+    return char:FindFirstChildOfClass("Tool") ~= nil
+end
+
+local function GetTargetInFOV()
+    local closest, shortest = nil, Config.Aim.FOVRadius
+    local center = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+    for _, player in pairs(Players:GetPlayers()) do
+        if player == LocalPlayer then continue end
+        if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then continue end
+        local hum = player.Character:FindFirstChild("Humanoid")
+        if not hum or hum.Health <= 0 then continue end
+        if Config.Aim.TeamCheck and player.Team == LocalPlayer.Team then continue end
+
+        local root = player.Character.HumanoidRootPart
+        local dist = (root.Position - Camera.CFrame.Position).Magnitude
+        if dist > Config.Aim.MaxDistance then continue end
+        if Config.Aim.WallCheck and not IsVisible(player.Character) then continue end
+
+        local sp, onScreen = Camera:WorldToViewportPoint(root.Position)
+        if not onScreen then continue end
+
+        local d = (Vector2.new(sp.X, sp.Y) - center).Magnitude
+        if d < shortest then closest = player; shortest = d end
+    end
+    return closest
+end
+
+local function UpdateAim()
+    if not Config.Aim.Enabled or not IsHoldingWeapon() then
+        TargetLine.Visible = false
+        currentTarget = nil
+        return
+    end
+    local target = GetTargetInFOV()
+    currentTarget = target
+    if target then
+        local sp, onScreen = Camera:WorldToViewportPoint(target.Character.HumanoidRootPart.Position)
+        if Config.Aim.ShowTargetLine and onScreen then
+            TargetLine.From = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+            TargetLine.To = Vector2.new(sp.X, sp.Y)
+            TargetLine.Visible = true
+        else TargetLine.Visible = false end
+    else TargetLine.Visible = false end
+end
+
+-- ==========================================
+-- [6] Infinite Ammo + Stamina
+-- ==========================================
+local function ApplyInfiniteAmmo()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local tool = char:FindFirstChildOfClass("Tool")
+    if tool then
+        for _, obj in pairs(tool:GetDescendants()) do
+            if obj:IsA("IntValue") or obj:IsA("NumberValue") then
+                local n = obj.Name:lower()
+                if n:find("ammo") or n:find("clip") or n:find("mag") or n:find("bullet") then
+                    pcall(function() obj.Value = 999 end)
+                end
+            end
+        end
+    end
+end
+
+local function ApplyInfiniteStamina()
+    local char = LocalPlayer.Character
+    if not char then return end
+    for _, obj in pairs(char:GetDescendants()) do
+        if obj:IsA("IntValue") or obj:IsA("NumberValue") then
+            local n = obj.Name:lower()
+            if n:find("stamina") or n:find("energy") or n:find("stam") then
+                pcall(function() obj.Value = obj.Value + 100 end)
+            end
+        end
+    end
+    local pg = LocalPlayer:FindFirstChild("PlayerGui")
+    if pg then
+        for _, obj in pairs(pg:GetDescendants()) do
+            if obj:IsA("IntValue") or obj:IsA("NumberValue") then
+                local n = obj.Name:lower()
+                if n:find("stamina") or n:find("energy") or n:find("stam") then
+                    pcall(function() obj.Value = obj.Value + 100 end)
+                end
+            end
+        end
+    end
+end
+
+-- ==========================================
+-- [7] ปุ่ม Toggle UI (แบบโลโก้)
+-- ==========================================
+local ToggleGui = Instance.new("ScreenGui")
+ToggleGui.Name = "MGH_Toggle"
+ToggleGui.IgnoreGuiInset = true
+ToggleGui.ResetOnSpawn = false
+ToggleGui.DisplayOrder = 1000
+ToggleGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local ToggleFrame = Instance.new("Frame")
+ToggleFrame.Size = UDim2.new(0, 60, 0, 60)
+ToggleFrame.Position = UDim2.new(0, 15, 0.5, -30)
+ToggleFrame.BackgroundColor3 = THEME.Darker
+ToggleFrame.BorderSizePixel = 0
+ToggleFrame.Parent = ToggleGui
+
+local TFC = Instance.new("UICorner"); TFC.CornerRadius = UDim.new(1, 0); TFC.Parent = ToggleFrame
+local TFS = Instance.new("UIStroke"); TFS.Color = THEME.Primary; TFS.Thickness = 2.5; TFS.Parent = ToggleFrame
+
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Size = UDim2.new(1, 0, 1, 0)
+ToggleBtn.BackgroundTransparency = 1
+ToggleBtn.Text = "MGH"
+ToggleBtn.TextColor3 = THEME.Primary
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.TextSize = 18
+ToggleBtn.Parent = ToggleFrame
+
+local CloseX = Instance.new("TextButton")
+CloseX.Size = UDim2.new(0, 18, 0, 18)
+CloseX.Position = UDim2.new(1, -8, 0, -8)
+CloseX.BackgroundColor3 = THEME.Accent
+CloseX.Text = "✕"
+CloseX.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseX.TextSize = 10
+CloseX.Font = Enum.Font.GothamBold
+CloseX.BorderSizePixel = 0
+CloseX.Visible = false
+CloseX.Parent = ToggleFrame
+local CXC = Instance.new("UICorner"); CXC.CornerRadius = UDim.new(1, 0); CXC.Parent = CloseX
+
+local UIVisible = true
+local RayfieldGui = nil
+
+local function ToggleUI()
+    UIVisible = not UIVisible
+    if RayfieldGui then RayfieldGui.Enabled = UIVisible end
+    CloseX.Visible = UIVisible
+    TFS.Color = UIVisible and THEME.Primary or THEME.Accent
+    ToggleBtn.TextColor3 = UIVisible and THEME.Primary or THEME.Accent
+end
+
+ToggleBtn.MouseButton1Click:Connect(ToggleUI)
+
+local dragging, dragStart, startPos
+ToggleFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true; dragStart = input.Position; startPos = ToggleFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        ToggleFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- ==========================================
+-- [8] MAIN LOOP
+-- ==========================================
+RunService.RenderStepped:Connect(function()
+    pcall(UpdateESP)
+    pcall(UpdateAim)
+    FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+    FOVCircle.Radius = Config.Aim.FOVRadius
+    FOVCircle.Visible = Config.Aim.ShowFOV and Config.Aim.Enabled
+end)
+
+RunService.Heartbeat:Connect(function()
+    if Config.Misc.InfiniteAmmo then pcall(ApplyInfiniteAmmo) end
+    if Config.Misc.InfiniteStamina then pcall(ApplyInfiniteStamina) end
+end)
+
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.F1 then Config.ESP.Enabled = not Config.ESP.Enabled
+    elseif input.KeyCode == Enum.KeyCode.F2 then Config.Aim.Enabled = not Config.Aim.Enabled
+    elseif input.KeyCode == Enum.KeyCode.F3 then Config.Misc.InfiniteAmmo = not Config.Misc.InfiniteAmmo
+    elseif input.KeyCode == Enum.KeyCode.F4 then Config.Misc.InfiniteStamina = not Config.Misc.InfiniteStamina end
+end)
+
+-- ==========================================
+-- [9] โหลด Rayfield UI
+-- ==========================================
+task.wait(2.5)
+
+local ok, err = pcall(function()
+    local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+    local Window = Rayfield:CreateWindow({
+       Name = "MultiGame Hub v6.0",
+       LoadingTitle = "MultiGame Hub",
+       LoadingSubtitle = "Final Edition",
+       ConfigurationSaving = {Enabled = false},
+       KeySystem = false
+    })
+
+    task.spawn(function()
+        for _, gui in pairs(game.CoreGui:GetChildren()) do
+            if gui.Name:find("Rayfield") then RayfieldGui = gui; break end
+        end
+    end)
+
+    -- Main
+    local MainTab = Window:CreateTab("Main", 4483362458)
+    MainTab:CreateParagraph({Title = "⌨️ ปุ่มลัด", Content = "F1 = ESP | F2 = Aim | F3 = Infinite Ammo | F4 = Infinite Stamina\nแตะปุ่ม MGH = เปิด/ปิด UI"})
+    MainTab:CreateButton({Name = "🔄 Toggle UI", Callback = function() ToggleUI() end})
+
+    -- ESP
+    local ESPTab = Window:CreateTab("ESP", 4483362458)
+    ESPTab:Create
